@@ -1,4 +1,3 @@
-Attribute VB_Name = "Module1"
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal Milliseconds As LongPtr)
 
 Const WAIT_TIMEOUT = 300
@@ -45,14 +44,14 @@ ElseIf region = "NA" Then
 End If
 
 
-Sleep 5000
+Sleep 8000
 'ieBusy ie
 ie.document.querySelector(".x-grid3-body div:first-child .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the first case from the list
 Sleep 3500
 'ieBusy ie
 
 firstRow = True
-w = 1
+w = 106
 howManyCases = Range("N2")  'how many cases to work on, based on the N2 column
 howManyCases = howManyCases + 1
 
@@ -121,7 +120,7 @@ For x = 2 To howManyCases
     End If
     
     
-    Sleep 4000
+    Sleep 5000
     Range("D" & x) = ie.document.getElementById("00NF0000008W7z8_ileinner").innerHTML   'retrieves the business address number again, to double check for correct entry
     If Range("D" & x) = Range("A" & x) Then
     
@@ -204,9 +203,9 @@ For x = 2 To howManyCases
                                                 ie.document.querySelector(".x-grid3-body div:nth-child(" & w & ") .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the nth case from the list
                                              End If
                                              
-                                            Sleep 3000
+                                            Sleep 5000
                                             ie.document.querySelector(".oRight .bPageBlock .pbHeader table:first-child tbody:first-child tr:first-child .pbButton input:nth-child(4)").Click      'clicks on "Close Case"
-                                            Sleep 3000
+                                            Sleep 3500
                                             
                                             Set dropOptions = ie.document.getElementById("cas7")    'selects the closed status from the dropdown
                                             
@@ -258,7 +257,7 @@ For x = 2 To howManyCases
         
         
     
-     Sleep 2000
+     Sleep 3000
     ie.document.querySelector(".bPageBlock .pbBody .pbSubsection .detailList tbody:first-child tr:nth-child(4) td:nth-child(4) textarea:first-child").Value = "Inactivated per case# " & Range("B" & x)
     Range("D" & x) = ie.document.querySelector(".bPageBlock .pbBody div:nth-child(9) .detailList tbody:first-child tr:first-child td:nth-child(4)").innerHTML 'checking for checked flags
     Set inner = Range("D" & x)
@@ -355,7 +354,7 @@ For x = 2 To howManyCases
     Do While ie.readyState <> READYSTATE_COMPLETE
         DoEvents
     Loop
-    Sleep 3000
+    Sleep 1500
     
      If firstRow = True Then
         ie.document.querySelector(".x-grid3-body div:first-child .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the first case from the list
@@ -363,35 +362,67 @@ For x = 2 To howManyCases
         ie.document.querySelector(".x-grid3-body div:nth-child(" & w & ") .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the nth case from the list
      End If
      
+    
+    Do While ie.readyState <> READYSTATE_COMPLETE
+        DoEvents
+    Loop
     Sleep 3000
-    ie.document.querySelector(".oRight .bPageBlock .pbHeader table:first-child tbody:first-child tr:first-child .pbButton input:nth-child(4)").Click      'clicks on "Close Case"
-    Sleep 3000
+    Range("K" & x) = ie.document.querySelector(".bPageTitle .ptBody .content .pageDescription").innerHTML       'gets the case# and checks it agains the ID from the B cell
+    sfdcArray = Split(Range("K" & x), "<")
+    Range("K" & x) = sfdcArray(0)
     
-    Set dropOptions = ie.document.getElementById("cas7")
-    
-        For Each o In dropOptions.Options
-            If o.Value = "Closed" Then
-                o.Selected = True
-                Exit For
-            End If
-        Next
-        
-    Set dropOptions = ie.document.getElementById("cas6")
-    
-        For Each o In dropOptions.Options
-            If o.Value = "Solution Delivered" Then
-                o.Selected = True
-                Exit For
-            End If
-        Next
+            If Range("B" & x) = Range("K" & x) Then
             
-     ie.document.getElementById("00NA00000045ZfG").Value = "case completed"
-     ie.document.querySelector(".pbButtonb input:first-child").Click 'clicks on Save button
-     Sleep 4000
-     Range("D" & x) = "address found"
-     Range("E" & x) = "Yes"
-     Range("K" & x) = ie.document.getElementById("cas7_ileinner").innerHTML
-     Sleep 4000
+                    Sleep 2000
+                    Do While ie.readyState <> READYSTATE_COMPLETE
+                        DoEvents
+                    Loop
+                    ie.document.querySelector(".oRight .bPageBlock .pbHeader table:first-child tbody:first-child tr:first-child .pbButton input:nth-child(4)").Click      'clicks on "Close Case"
+                    
+                    
+                    Do While ie.readyState <> READYSTATE_COMPLETE
+                        DoEvents
+                    Loop
+                    Sleep 2000
+                    
+                    Set dropOptions = ie.document.getElementById("cas7")
+                    
+                        For Each o In dropOptions.Options
+                            If o.Value = "Closed" Then
+                                o.Selected = True
+                                Exit For
+                            End If
+                        Next
+                        
+                    Set dropOptions = ie.document.getElementById("cas6")
+                    
+                        For Each o In dropOptions.Options
+                            If o.Value = "Solution Delivered" Then
+                                o.Selected = True
+                                Exit For
+                            End If
+                        Next
+                            
+                     ie.document.getElementById("00NA00000045ZfG").Value = "case completed"
+                     ie.document.querySelector(".pbButtonb input:first-child").Click 'clicks on Save button
+                     Sleep 4000
+                     Range("D" & x) = "address found"
+                     Range("E" & x) = "Yes"
+                     Sleep 3000
+                     Range("K" & x) = ie.document.getElementById("cas7_ileinner").innerHTML
+                     Sleep 2000
+                     Do While ie.readyState <> READYSTATE_COMPLETE
+                        DoEvents
+                    Loop
+                     
+            ElseIf Range("B" & x) <> Range("K" & x) Then
+            
+                    Range("K" & x) = "Not Closed"
+                    w = w + 1
+                    Range("E" & x) = "No"
+                    firstRow = False
+                    
+            End If
      
 nextiteration:
 
@@ -402,7 +433,9 @@ nextiteration:
             ie.Navigate "https://ptc.my.salesforce.com/500?fcf=00B5A000009VcF4"     'navigates to the reports page for NA
         End If
 
-    
+Do While ie.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
     
      Sleep 3000
      If firstRow = True Then
@@ -410,9 +443,15 @@ nextiteration:
      ElseIf firstRow = False Then
         ie.document.querySelector(".x-grid3-body div:nth-child(" & w & ") .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the nth case from the list
      End If
-     Sleep 3000
+     Sleep 4000
+     
+Do While ie.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
 
 Next x
+
+MsgBox "Charlie Oscar Mike"
 
 End Sub
 
