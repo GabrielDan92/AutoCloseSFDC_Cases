@@ -1,3 +1,3 @@
 # AutoCloseSFDC_Cases
 
-<a><img src="sfdcClosedCases.PNG"/></a>
+<a><img src="Capture.PNG"/></a>
