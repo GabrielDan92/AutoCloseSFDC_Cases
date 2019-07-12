@@ -28,6 +28,7 @@ ie.Navigate "https://login.salesforce.com/"
 ie.Document.getElementById("Login").Click   'clicks on the Login SFDC button
             Sleep 1000
             Call ieBusy(ie)
+            Sleep 1000
 Call RegionChecking(region, ie)
             Call ieBusy(ie)
 ie.Document.querySelector(".x-grid3-body div:first-child .x-grid3-row-table .x-grid3-col:nth-child(4) .x-grid3-cell-inner a:first-child").Click       'selects the first case from the list
